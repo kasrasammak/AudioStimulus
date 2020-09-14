@@ -11,7 +11,6 @@ import pyaudio
 import time
 import os
 
-
 def download_wait(path_to_downloads):
     seconds = 0
     dl_wait = True
@@ -61,30 +60,3 @@ def play_sound(audio, path, wait):
     
     p.terminate()
     return (after, duration)
-
-
-#n = 1024
-#count = 0
-#now = time.time()
-#data = sound_stim.readframes(n)
-#while data:
-#    before = time.time()
-#    stream.write(data)
-#    then = now
-#    now = time.time()
-#    delta = round((now*1000) - (before*1000), 3)
-#    count += 1
-#    print("Current Position: " + 
-#          str(sound_stim.tell()) + 
-#          " | " + str(time.time()) + 
-#          " | " + str(count) +
-#          " | " + str(delta))
-#    data = sound_stim.readframes(n)
-    
-
-    
-#while data:
-#    before = datetime.now()
-#    stream.write(data)
-#    after = datetime.now()
-

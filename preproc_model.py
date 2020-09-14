@@ -102,8 +102,8 @@ j2 = j1.iloc[indices]
 j3 = j2.mean()
 
 random.seed(100)
-bssss = bgnormavg.drop(columns=['Unnamed: 0'])
-main = bssss.sample(frac=1)
+# bssss = bgnormavg.drop(columns=['Unnamed: 0'])
+main = bg1.sample(frac=1)
 main = main.reset_index()
 main = main.iloc[:, 1:]
 
@@ -117,6 +117,6 @@ y_train = main['label']
 X_val = val.iloc[:, 1:]
 y_val = val['label']
 
-model, acc, pred, y_test = md.fitPredictValSet(X_train, y_train, X_val, y_val, 'knn')
+model, acc, pred, y_test = md.fitPredictValSet(X_train, y_train, X_val, y_val, 'tree')
 
 print(indices)
