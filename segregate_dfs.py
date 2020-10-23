@@ -126,3 +126,6 @@ big_ass_validation_set = get_big_ass_df(validation_list, names, length)
 
 training_chans = get_separate_channel_dfs(big_ass_training_set)
 validation_chans = get_separate_channel_dfs(big_ass_validation_set)
+
+
+

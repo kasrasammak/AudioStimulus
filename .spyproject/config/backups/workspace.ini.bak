@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['lstm.py', 'preproc_model.py', 'segregate_dfs.py', 'getcsv.py', 'main.py', 'test_stream.py', 'methods.py', 'streamprocessing.py', 'neurofeedback.py']
+recent_files = ['lstm.py', 'segregate_dfs.py', 'methods.py', 'neurofeedback.py', 'get_blink_data.py', 'fft.py', 'getcsv.py', 'main.py', 'blinkTesting.csv']
 
