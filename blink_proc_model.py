@@ -19,7 +19,6 @@ def t_label(df, label):
 def getDF(df_list, label):
     bigdf = pd.DataFrame()
     for frame in df_list: 
-        print(t_label(frame, label))
         bigdf = bigdf.append(t_label(frame, label))
     return bigdf.reset_index().iloc[:, 1:]
 
@@ -46,9 +45,9 @@ mainval = bg1val.sample(frac=1)
 main2val = bg2val.sample(frac=1)
 main3val = bg3val.sample(frac=1)
 main4val = bg4val.sample(frac=1)
-X_train = main3.iloc[:, 1:]
-y_train = main3['label']
-X_val = main3val.iloc[:, 1:]
-y_val = main3val['label']
+X_train = main.iloc[:, 1:]
+y_train = main['label']
+X_val = mainval.iloc[:, 1:]
+y_val = mainval['label']
 
 model, acc, pred, y_test = md.fitPredictValSet(X_train, y_train, X_val, y_val, 'svm')
