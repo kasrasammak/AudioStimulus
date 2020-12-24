@@ -43,11 +43,11 @@ def eval_model(model, testX,testy, batch_size):
 
 
 def get_formatted_x_y(df):
-    yoyoyo = np.array([np.array(df[0].iloc[:, 1:].T), np.array(df[1].iloc[:, 1:].T), np.array(df[2].iloc[:, 1:].T), np.array(df[3].iloc[:, 1:].T)])
-    yoyo = yoyoyo.T
-    ytrainyo = np.array([np.array(df[0].iloc[:, 0]), np.array(df[1].iloc[:, 0]), np.array(df[2].iloc[:, 0]), np.array(df[3].iloc[:, 0])])
-    ytrainyo = ytrainyo.T
-    return (yoyo, ytrainyo)
+    x = np.array([np.array(df[0].iloc[:, 1:].T), np.array(df[1].iloc[:, 1:].T), np.array(df[2].iloc[:, 1:].T), np.array(df[3].iloc[:, 1:].T)])
+    x_t = x.T
+    y = np.array([np.array(df[0].iloc[:, 0]), np.array(df[1].iloc[:, 0]), np.array(df[2].iloc[:, 0]), np.array(df[3].iloc[:, 0])])
+    y_t = y.T
+    return (x_t, y_t)
 #tensX = tf.convert_to_tensor(yoyo)
 #tensy = tf.convert_to_tensor(ytrainyo)
 #

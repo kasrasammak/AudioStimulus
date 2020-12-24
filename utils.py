@@ -84,7 +84,7 @@ def compute_band_powers(eegdata, fs):
     Y = np.fft.fft(dataWinCenteredHam, n=NFFT, axis=0) / winSampleLength
     PSD = 2 * np.abs(Y[0:int(NFFT / 2), :])
     f = fs / 2 * np.linspace(0, 1, int(NFFT / 2))
-
+    Y*winSampleLength
     # SPECTRAL FEATURES
     # Average of band powers
     # Delta <4

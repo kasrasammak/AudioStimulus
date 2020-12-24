@@ -9,7 +9,10 @@ Created on Tue Oct 20 02:06:28 2020
 import pandas as pd
 import glob
 import numpy as np
+
+path = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blink_experiment/'
     
+# find nearest timestamp and get indices for before and after that timestamp
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -25,10 +28,10 @@ def getIndices(df, val):
     return (indStart, indStop)
 
 # get csvs into list of dataframes with eeg data for each set
-blinkTrainingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTraining/*.csv')
-blinkTestingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTesting/*.csv')
-nonBlinkTrainingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTraining/*.csv')
-nonBlinkTestingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTesting/*.csv')
+blinkTrainingList = glob.glob(path + 'blinkTraining/*.csv')
+blinkTestingList = glob.glob(path + 'blinkTesting/*.csv')
+nonBlinkTrainingList = glob.glob(path + 'nonBlinkTraining/*.csv')
+nonBlinkTestingList = glob.glob(path + 'nonBlinkTesting/*.csv')
 blinkTrainList = []
 blinkTestList = []
 nonBlinkTrainList = []
@@ -43,10 +46,10 @@ for member in nonBlinkTestingList:
     nonBlinkTestList.append(pd.read_csv(member).iloc[:,1:])
     
 # get csvs into lists of information about the timestamps where the blinks did and didn't happen
-blinkTrainingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTraining/blinkTrainingData/*.csv')
-blinkTestingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTesting/blinkTestingData/*.csv')
-nonBlinkTrainingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTraining/nonBlinkTrainingData/*.csv')
-nonBlinkTestingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTesting/nonBlinkTestingData/*.csv')
+blinkTrainingData = glob.glob(path + 'blinkTraining/blinkTrainingData/*.csv')
+blinkTestingData = glob.glob(path + 'blinkTesting/blinkTestingData/*.csv')
+nonBlinkTrainingData = glob.glob(path + 'nonBlinkTraining/nonBlinkTrainingData/*.csv')
+nonBlinkTestingData = glob.glob(path + 'nonBlinkTesting/nonBlinkTestingData/*.csv')
 blinkTrainData = []
 blinkTestData = []
 nonBlinkTrainData = []
@@ -60,7 +63,6 @@ for member in nonBlinkTrainingData:
 for member in nonBlinkTestingData:
     nonBlinkTestData.append(pd.read_csv(member).iloc[0,1])
     
-# find nearest timestamp and get indices for before and after that timestamp
 
 
 # find correct indices in order to cut the arrays around the area where the blink 
@@ -102,19 +104,19 @@ nonBlinkTestDf = nonBlinkTestDf.reset_index().iloc[:,1:]
 
 
 # save to csvs
-blinkTrainDf.to_csv('blinkTraining.csv')
-blinkTestDf.to_csv('blinkTesting.csv')
-nonBlinkTrainDf.to_csv('nonBlinkTraining.csv')
-nonBlinkTestDf.to_csv('nonBlinkTesting.csv')
+blinkTrainDf.to_csv(path + 'blink_results/blinkTraining.csv')
+blinkTestDf.to_csv(path + 'blink_results/blinkTesting.csv')
+nonBlinkTrainDf.to_csv(path + 'blink_results/nonBlinkTraining.csv')
+nonBlinkTestDf.to_csv(path + 'blink_results/nonBlinkTesting.csv')
 
 
 
 # one run
-blinkTrainingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTraining/*.csv')
+blinkTrainingList = glob.glob(path + 'blinkTraining/*.csv')
 blinkTrainList = []
 for member in blinkTrainingList:
     blinkTrainList.append(pd.read_csv(member).iloc[:,1:])
-blinkTrainingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTraining/blinkTrainingData/*.csv')
+blinkTrainingData = glob.glob(path + 'blinkTraining/blinkTrainingData/*.csv')
 blinkTrainData = []
 for member in blinkTrainingData:
     blinkTrainData.append(pd.read_csv(member).iloc[0,1])
@@ -125,14 +127,14 @@ for indx, timestamp in enumerate(blinkTrainData):
     blinkTrain.append(blinkTrainList[indx].iloc[indStart:indStop, 1:])
     blinkTrainDf = blinkTrainDf.append(blinkTrainList[indx].iloc[indStart:indStop, 1:])
 blinkTrainDf = blinkTrainDf.reset_index().iloc[:,1:]
-blinkTrainDf.to_csv('blinkTraining.csv')
+blinkTrainDf.to_csv(path + 'blink_results/blinkTraining.csv')
 
 
-blinkTestingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTesting/*.csv')
+blinkTestingList = glob.glob(path + 'blinkTesting/*.csv')
 blinkTestList = []
 for member in blinkTestingList:
     blinkTestList.append(pd.read_csv(member).iloc[:,1:])
-blinkTestingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTesting/blinkTestingData/*.csv')
+blinkTestingData = glob.glob(path + 'blinkTesting/blinkTestingData/*.csv')
 blinkTestData = []
 for member in blinkTestingData:
     blinkTestData.append(pd.read_csv(member).iloc[0,1])
@@ -143,15 +145,15 @@ for indx, timestamp in enumerate(blinkTestData):
     blinkTest.append(blinkTestList[indx].iloc[indStart:indStop, 1:])
     blinkTestDf = blinkTestDf.append(blinkTestList[indx].iloc[indStart:indStop, 1:])
 blinkTestDf = blinkTestDf.reset_index().iloc[:,1:]
-blinkTestDf.to_csv('blinkTesting.csv')
+blinkTestDf.to_csv(path + 'blink_results/blinkTesting.csv')
 
 
 
-nonBlinkTrainingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTraining/*.csv')
+nonBlinkTrainingList = glob.glob(path + 'nonBlinkTraining/*.csv')
 nonBlinkTrainList = []
 for member in nonBlinkTrainingList:
     nonBlinkTrainList.append(pd.read_csv(member).iloc[:,1:])
-nonBlinkTrainingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTraining/nonBlinkTrainingData/*.csv')
+nonBlinkTrainingData = glob.glob(path + 'nonBlinkTraining/nonBlinkTrainingData/*.csv')
 nonBlinkTrainData = []
 for member in nonBlinkTrainingData:
     nonBlinkTrainData.append(pd.read_csv(member).iloc[0,1])   
@@ -162,17 +164,17 @@ for indx, timestamp in enumerate(nonBlinkTrainData):
     nonBlinkTrain.append(nonBlinkTrainList[indx].iloc[indStart:indStop, 1:])
     nonBlinkTrainDf = nonBlinkTrainDf.append(nonBlinkTrainList[indx].iloc[indStart:indStop, 1:])
 nonBlinkTrainDf = nonBlinkTrainDf.reset_index().iloc[:,1:]
-nonBlinkTrainDf.to_csv('nonBlinkTraining.csv')
+nonBlinkTrainDf.to_csv(path + 'blink_results/nonBlinkTraining.csv')
 
 
 
 
 
-nonBlinkTestingList = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTesting/*.csv')
+nonBlinkTestingList = glob.glob(path + 'nonBlinkTesting/*.csv')
 nonBlinkTestList = []
 for member in nonBlinkTestingList:
     nonBlinkTestList.append(pd.read_csv(member).iloc[:,1:])
-nonBlinkTestingData = glob.glob('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/nonBlinkTesting/nonBlinkTestingData/*.csv')
+nonBlinkTestingData = glob.glob(path + 'nonBlinkTesting/nonBlinkTestingData/*.csv')
 nonBlinkTestData = []
 for member in nonBlinkTestingData:
     nonBlinkTestData.append(pd.read_csv(member).iloc[0,1])
@@ -183,6 +185,4 @@ for indx, timestamp in enumerate(nonBlinkTestData):
     nonBlinkTest.append(nonBlinkTestList[indx].iloc[indStart:indStop, 1:])
     nonBlinkTestDf= nonBlinkTestDf.append(nonBlinkTestList[indx].iloc[indStart:indStop, 1:])    
 nonBlinkTestDf = nonBlinkTestDf.reset_index().iloc[:,1:]
-nonBlinkTestDf.to_csv('nonBlinkTesting.csv')
-  
-feetTesting = pd.read_csv('/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blinkTraining/righthand-training.csv')
+nonBlinkTestDf.to_csv(path + 'blink_results/nonBlinkTesting.csv')
