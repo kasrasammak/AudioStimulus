@@ -9,6 +9,7 @@ Created on Mon Nov  9 18:19:36 2020
 import pandas as pd
 import numpy as np
 from numpy import linalg as LA
+from scipy import linalg as la
 import matplotlib.pyplot as plt
 import covariance as co
 
@@ -22,7 +23,10 @@ blinkErp = co.get_ERP(blinkDf, 68, 4).T.reset_index().iloc[:,1:].T
 
 covMat = blinkCovMat1.to_numpy()
 covMat = np.array(covMat, dtype=float)
+
 evals, evecs = LA.eig(covMat)
+
+biggger = np.dot(covMat, evecs)
 
 idx = evals.argsort()[::-1]   
 eigenValues = evals[idx]
@@ -42,3 +46,6 @@ axs[2].plot(blinkErp.iloc[:,2])
 axs[3].plot(blinkErp.iloc[:,3])
 
 plt.scatter(blinkErp.iloc[:,0], blinkErp.iloc[:,1])
+
+array = np.array([[3,1],[1,2]], dtype=float)
+e, v = LA.eig(array)

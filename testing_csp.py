@@ -45,6 +45,7 @@ def filter_and_append(df, size, trials, fs=256, low=4, high=32):
 blink_filtered_4_32 = filter_and_append(blinkDf, 512, 68)
 nonBlink_filtered_4_32 = filter_and_append(nonblinkDf, 512, 68)
 
+
 csps = CSP(blink_filtered_4_32, nonBlink_filtered_4_32)
 
 ti4 = []
@@ -52,22 +53,43 @@ ti4.append(blinkDf[0:512].T)
 ti5 = []
 ti5.append(nonblinkDf[0:512].T)
 
-csps2 = CSP(ti4,ti5)
+# csps2 = CSP(ti4,ti5)
 
-from scipy import linalg as la
+# from scipy import linalg as la
 
 # vec, val = la.eig(csps[0])
 
-blinkDf1Trial = co.get_mean_center(blinkDf[0:512].T)
-nonBlinkDf1Trial = co.get_mean_center(nonblinkDf[0:512].T)
+# blinkDf1Trial = co.get_mean_center(blinkDf[0:512].T)
+# nonBlinkDf1Trial = co.get_mean_center(nonblinkDf[0:512].T)
+# covMatBlink = co.get_covariance_matrix(blinkDf1Trial, 4)
+# covMatNonBlink = co.get_covariance_matrix(nonBlinkDf1Trial, 4)
+
+# covmat1 = covMatBlink.to_numpy()
+# covmat2 = covMatNonBlink.to_numpy()
+# covmat1 = np.array(covmat1, dtype=float)
+# covmat2 = np.array(covmat2, dtype=float)
+
+# v,r = la.eig(covmat1, covmat1+covmat2)
+
+import matplotlib.pyplot as plt
+
+arr = np.hstack(blink_filtered_4_32)
+arr2 = np.hstack(nonBlink_filtered_4_32)
+spatialfilteredblink = np.dot(csps[0], arr)
+spatialfilterednonblink = np.dot(csps[1], arr2)
+arrR = arr[:, 512:1024]
+arr2R = arr2[:, 512:1024]
+s1 = spatialfilteredblink[:, 512:1024]
+s2 = spatialfilterednonblink[:, 512:1024]
+plt.scatter(arrR[1], arrR[2])
+plt.scatter(s1[1], s1[2])
+plt.scatter(arr2R[1], arr2R[2])
+plt.scatter(s2[1], s2[2])
+plt.ylim([-7, 5])
 
 
-covMatBlink = co.get_covariance_matrix(blinkDf1Trial, 4)
-covMatNonBlink = co.get_covariance_matrix(nonBlinkDf1Trial, 4)
+plt.scatter(s1[0],s2[1])
+arr = np.hstack(transpose)
+plt.plot(spatialfilteredblink)
+spatialfilterednonblink = np.dot(csps[0], plt.plot(blink_filtered_4_32))
 
-covmat1 = covMatBlink.to_numpy()
-covmat2 = covMatNonBlink.to_numpy()
-covmat1 = np.array(covmat1, dtype=float)
-covmat2 = np.array(covmat2, dtype=float)
-
-v,r = la.eig(covmat1, covmat1+covmat2)
