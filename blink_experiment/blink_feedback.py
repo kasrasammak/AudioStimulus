@@ -34,6 +34,7 @@ from math import sqrt
 from sklearn.metrics import mean_squared_error 
 from sklearn.svm import SVC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+import pca
 # Handy little enum to make code more readable
 
 import playwave as pw
@@ -110,7 +111,6 @@ if __name__ == "__main__":
     band_buffer = np.zeros((n_win_test, 4))
 
     """ 3. GET DATA """
-
     # The try/except structure allows to quit the while loop by aborting the
     # script with <Ctrl-C>
     print('Press Ctrl-C in the console to break the while loop.')
@@ -125,14 +125,17 @@ if __name__ == "__main__":
                 timeout=1, max_samples=256)
 
             # Only keep the channel we're interested in
-            ch_data = np.array(eeg_data)[:, INDEX_CHANNEL]
+            ch_data = np.array(eeg_data)[:, :4]
             new_data1 = ch_data - np.mean(ch_data)
             pd.concat([pd.DataFrame(ch_data), pd.DataFrame(new_data1)], axis=1)
             # print('Theta Relaxation: ', theta_metric)
             if (len(new_data1) == 256):
-                new_data = pd.DataFrame(new_data1).T
-                y_pred = model.predict(new_data)
-                if (y_pred == 1):
+                comp = pca.get_comp(new_data1.T, V, [0,1,2,3])
+                l = []
+                test = np.log(np.var(comp,axis = 1, ddof=1))
+                test = test.reshape(-1,1)
+                y_pred = mod.predict(test)
+                if (y_pred.all() == 1):
                     pw.play_sound(aud_name, proj_path, 0)
                 print(y_pred)
 

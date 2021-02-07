@@ -70,6 +70,44 @@ def get_all_dataframes(rootdir, label):
     
     return (dftlabels, big_frame)
 
+def add_label_train_test_split(df, label, ntrials):
+    nbchan = len(df)
+    df = df.T
+    comp = np.empty([len(df), 1])
+    comp[:,:] = label
+    comp2 = np.append(df, comp, axis = 1)
+    comp2 = add_dimension(comp2, pnts, ntrials, nbchan+1)
+    compX = comp2[:,:,:nbchan]
+    compY = comp2[:,:,nbchan]
+    return (compX, compY)
+
+
+
+
+
+
+
+
+# x_train_1, y_train_1 = add_label_train_test_split(comp_blink_train, 1, 68)
+# x_train_2, y_train_2 = add_label_train_test_split(comp_nonblink_train, 0, 69)
+
+# x_tr = np.append(x_train_1, x_train_2[:68,:,:], axis=1)
+# y_tr = np.append(y_train_1, y_train_2[:68,:], axis=1)
+
+# x_test_1, y_test_1 = add_label_train_test_split(comp_blink_test_ged, 1, 68)
+# x_test_2, y_test_2 = add_label_train_test_split(comp_nonblink_test_ged, 0, 68)
+
+# x_t = np.append(x_test_1, x_test_2[:,:,:], axis=1)
+# y_t = np.append(y_test_1, y_test_2[:,:], axis=1)
+    
+# import methods as md
+
+# mod, acc = md.fitPredictValSet(x_tr, y_tr, x_t, y_t, "lda", n_components=2)
+
+
+
+
+
 # dft_labels, big_frame = get_all_dataframes(rootdir, 1)
 
 

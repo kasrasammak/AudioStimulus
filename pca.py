@@ -13,17 +13,10 @@ from scipy import linalg as la
 import matplotlib.pyplot as plt
 import covariance as co
 from CSP import CSP
+import methods as md
+import statistics as stat
+import methods as md
 
-
-
-ntrials = 68
-pnts = 512
-nbchan = 4
-path = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus/blink_experiment/blink_results'
-nonblinkDf = np.array(pd.read_csv(path + '/nonBlinkTraining.csv').iloc[:,1:])
-blinkDf = np.array(pd.read_csv(path + '/blinkTraining.csv').iloc[:,1:])
-blinkTestDf = np.array(pd.read_csv(path + '/blinkTesting.csv').iloc[:,1:])
-nonblinkTestDf = np.array(pd.read_csv(path + '/nonBlinkTesting.csv').iloc[:,1:])
 
 def add_dimension(df, pnts, ntrials, nbchan):
     reshaped = np.reshape(df, (ntrials, pnts, nbchan))
@@ -65,6 +58,10 @@ def get_thin_index(eigVal, threshhold=0):
     ind = np.nonzero(percent>threshhold)[0]
     return (ind, percent)
 
+def get_comp(df, V, ind):
+    comp_vecs = np.dot(V[:, ind].T, df)
+    return comp_vecs
+
 def get_eig_and_comp(df, pnts, ntrials, nbchan, threshhold=0):
     reshapedDf = np.reshape(df, (ntrials, pnts, nbchan))
     eigVal, eigVec = get_covmat_eigs(df, ntrials, pnts, nbchan)
@@ -80,53 +77,9 @@ def reshape_to_list(df, pnts):
     for i in range(1,ntrials):
         list1.append(reshape[i,:,:].T)
     return list1
+def add_label(df, label):
+    dfL = np.empty([len(df), 1])
+    dfL[:,:] = label
+    df = np.append(df, dfL, axis=1)
+    return df
 
-comp_eig_vecs_blink, eig_blink, blink_percent = get_eig_and_comp(blinkDf, 512, 68, 4, 5)
-comp_eig_vecs_nonblink, eig_nonblink,nonblink_percent = get_eig_and_comp(nonblinkDf, 512, 69, 4, 7)
-comp_eig_vecs_blink_test, eig_blink_test, blink_test_percent = get_eig_and_comp(blinkTestDf, 512, 68, 4, 5)
-comp_eig_vecs_nonblink_test, eig_nonblink_test,nonblink_test_percent = get_eig_and_comp(nonblinkTestDf, 512, 68, 4, 10)
-
-list1 = reshape_to_list(comp_eig_vecs_blink, 512)
-list2 = reshape_to_list(comp_eig_vecs_nonblink, 512)
-list3 = reshape_to_list(comp_eig_vecs_blink_test, 512)
-list4 = reshape_to_list(comp_eig_vecs_nonblink_test, 512)
-
-csps_training = CSP(list1, list2)
-csps_testing = CSP(list3, list4)
-
-comp_blink_train = np.dot(csps_training[0], comp_eig_vecs_blink)
-comp_nonblink_train = np.dot(csps_training[1], comp_eig_vecs_nonblink)
-comp_blink_test = np.dot(csps_testing[0], comp_eig_vecs_blink_test)
-comp_nonblink_test = np.dot(csps_testing[1], comp_eig_vecs_nonblink_test)
-
-
-# ---------EXTRA OPTIONS----------------------
-# --------------------------------------------
-# --------------------------------------------
-# ---------EXTRA OPTIONS----------------------
-
-# ERP covariance matrix
-blinkCovMat = co.get_cov_mat_ERP(blinkDf, 68, 4)
-blinkErp = co.get_ERP(blinkDf, 68, 4).T.reset_index().iloc[:,1:].T
-
-blinkCovMatErp = blinkCovMat.to_numpy()
-blinkCovMatErp = np.array(blinkCovMatErp, dtype=float)
-
-# for erp
-list1 = []
-list2 =[]
-list1.append(comp_eig_vecs_blink)
-list2.append(comp_eig_vecs_nonblink)
-
-
-# ------ some plotting 
-plt.plot(comp_eig_vecs_blink.T)
-plt.plot(blinkErp.iloc[:,3])
-fig, axs = plt.subplots(4)
-fig.suptitle('Vertically stacked subplots')
-axs[0].plot(blinkErp.iloc[:,0])
-axs[1].plot(blinkErp.iloc[:,1])
-axs[2].plot(blinkErp.iloc[:,2])
-axs[3].plot(blinkErp.iloc[:,3])
-
-plt.scatter(blinkErp.iloc[:,0], blinkErp.iloc[:,1])
