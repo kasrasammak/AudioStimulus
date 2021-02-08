@@ -11,28 +11,51 @@ import pandas as pd
 import pca
 from CSP import CSP
 import methods as md
+import add_label as al
 
-ntrials = 68
+ntrials = 120
 pnts = 512
 nbchan = 4
-directory = '/Users/owlthekasra/Documents/Code/Python'
-folder = '/AudioStimulus/blink_experiment/blink_results'
+directory = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus'
+
+folder = '/blink_experiment/blink_results'
 path = directory + folder
 nonblinkDf = np.array(pd.read_csv(path + '/nonBlinkTraining.csv').iloc[:,1:])
 blinkDf = np.array(pd.read_csv(path + '/blinkTraining.csv').iloc[:,1:])
 blinkTestDf = np.array(pd.read_csv(path + '/blinkTesting.csv').iloc[:,1:])
 nonblinkTestDf = np.array(pd.read_csv(path + '/nonBlinkTesting.csv').iloc[:,1:])
 
+thought_paths = []
+thought_paths.append(directory + '/data/sine_bass/trials_2')
+thought_paths.append(directory + '/data/sine_bass/trials_3')
+thought_paths.append(directory + '/data/no_sound/trials_1')
+thought_paths.append(directory + '/data/no_sound/trials_2')
+thought_paths.append(directory + '/data/sine_bass_thought/trials_1')
+
+dfSound = al.get_long_dataframe(thought_paths[0])
+dfSoundTest = al.get_long_dataframe(thought_paths[1]).iloc[:-2560,:]
+dfNoSound = al.get_long_dataframe(thought_paths[2])
+dfNoSoundTest = al.get_long_dataframe(thought_paths[3])
+dfThought = al.get_long_dataframe(thought_paths[4]).iloc[:122880,:]
+
+dfSoundTr = np.array(dfSound)
+dfNoSoundTr = np.array(dfNoSound)
+dfThoughtTr = np.array(dfThought)[:61440,:]
+dfSoundT= np.array(dfSound)
+dfNoSoundT = np.array(dfNoSound)
+dfThoughtT = np.array(dfThought)[61440:,:]
+
 ## Quick CSP
-covA = np.cov(blinkDf.T)
-covE = np.cov(nonblinkDf.T)
+covA = np.cov(dfNoSoundTr.T)
+covE = np.cov(dfThoughtTr.T)
 
 E, V = np.linalg.eig(np.dot(np.linalg.inv(covA + covE), covA))
+idx = E.argsort()[::-1]
 
-comp_blink_train = np.dot(V.T, blinkDf.T)
-comp_nonblink_train = np.dot(V.T, nonblinkDf.T)
-comp_blink_test = np.dot(V.T, blinkTestDf.T)
-comp_nonblink_test = np.dot(V.T, nonblinkTestDf.T)
+comp_blink_train = np.dot(V[:, idx].T, dfNoSoundTr.T)
+comp_nonblink_train = np.dot(V[:, idx].T, dfThoughtTr.T)
+comp_blink_test = np.dot(V[:, idx].T, dfNoSoundT.T)
+comp_nonblink_test = np.dot(V[:, idx].T, dfThoughtT.T)
 
 ## perform PCA and then CSP
 # thresh1 = 0
@@ -54,15 +77,15 @@ comp_nonblink_test = np.dot(V.T, nonblinkTestDf.T)
 # comp_blink_test = np.dot(csps_training[0], comp_blink_test_pca)
 # comp_nonblink_test = np.dot(csps_training[0], comp_nonblink_test_pca)
 
-dim = 1
+dim = 2
 
-f_blink_tr = pca.add_dimension(comp_blink_train[:dim, :], pnts, 68, dim)
-f_nonblink_tr = pca.add_dimension(comp_nonblink_train[:dim, :], pnts, 69, dim)
-f_blink_t = pca.add_dimension(comp_blink_test[:dim, :], pnts, 68, dim)
-f_nonblink_t = pca.add_dimension(comp_nonblink_test[:dim, :], pnts, 68, dim)
+f_blink_tr = pca.add_dimension(comp_blink_train[:dim, :], pnts, ntrials, dim)
+f_nonblink_tr = pca.add_dimension(comp_nonblink_train[:dim, :], pnts, ntrials, dim)
+f_blink_t = pca.add_dimension(comp_blink_test[:dim, :], pnts, ntrials, dim)
+f_nonblink_t = pca.add_dimension(comp_nonblink_test[:dim, :], pnts, ntrials, dim)
 
 f_x_b_tr = np.log(np.var(f_blink_tr,axis = 1, ddof=1))
-f_x_nb_tr = np.log(np.var(f_nonblink_tr,axis = 1, ddof=1))[:68,:]
+f_x_nb_tr = np.log(np.var(f_nonblink_tr,axis = 1, ddof=1))[:ntrials,:]
 f_x_b_t = np.log(np.var(f_blink_t,axis = 1, ddof=1))
 f_x_nb_t = np.log(np.var(f_nonblink_t,axis = 1, ddof=1))
 

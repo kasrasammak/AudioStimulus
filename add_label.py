@@ -70,6 +70,36 @@ def get_all_dataframes(rootdir, label):
     
     return (dftlabels, big_frame)
 
+def get_long_dataframe(rootdir):
+    filenames = glob.glob(rootdir + "/*.csv")
+    names = []
+    timesigs = []
+    dfs = []
+    for filename in filenames:
+        name = os.path.basename(filename)
+        name = name.split('.')
+        names.append(name[0])
+        temp = [int(s) for s in name[0].split('_') if s.isdigit()]
+        timesigs.append(str(temp[0]))
+        dfs.append(pd.read_csv(filename))
+    
+    dfT = []
+    for df in dfs: 
+        dfT.append(df.iloc[:512, 1:5])
+          
+    dftlabels = []
+    for (name, df) in zip(names, dfT):
+        dftlabels.append((name, df))
+        
+    dftnew = []
+    for df in dfT:
+        dftnew.append(df)
+       
+    big_frame = pd.concat(dftnew, ignore_index=True)
+    
+    return big_frame
+
+
 def add_label_train_test_split(df, label, ntrials):
     nbchan = len(df)
     df = df.T

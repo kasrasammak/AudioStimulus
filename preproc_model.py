@@ -19,12 +19,27 @@ ns_rd_1 = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus/data/no_sound/
 ns_rd_2 = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus/data/no_sound/trials_2'
 sbt_rd_1 = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus/data/sine_bass_thought/trials_1'
 
-_, df_sine_bass_extra = al.get_all_dataframes(sb_rd_3, 1)
-_, df_sine_bass_trials_2 = al.get_all_dataframes(sb_rd_1, 1)
-_, df_sine_bass_trials_3 = al.get_all_dataframes(sb_rd_2, 1)
-_, df_no_sound_trials_1 = al.get_all_dataframes(ns_rd_1, 0)
-_, df_no_sound_trials_2 = al.get_all_dataframes(ns_rd_2, 0)
-_, df_sine_bass_thought_trials_1 = al.get_all_dataframes(sbt_rd_1, 2)
+df_sine_bass_trials = al.get_long_dataframe(sb_rd_1).append(al.get_long_dataframe(sb_rd_2))
+df_no_sound_trials = al.get_long_dataframe(ns_rd_1).append(al.get_long_dataframe(ns_rd_2))
+df_sine_bass_thought_trials = al.get_long_dataframe(sbt_rd_1)
+
+# _, df_sine_bass_extra = al.get_all_dataframes(sb_rd_3, 1)
+# _, df_sine_bass_trials_2 = al.get_all_dataframes(sb_rd_1, 1)
+# _, df_sine_bass_trials_3 = al.get_all_dataframes(sb_rd_2, 1)
+# _, df_no_sound_trials_1 = al.get_all_dataframes(ns_rd_1, 0)
+# _, df_no_sound_trials_2 = al.get_all_dataframes(ns_rd_2, 0)
+# _, df_sine_bass_thought_trials_1 = al.get_all_dataframes(sbt_rd_1, 2)
+
+# diff_labels = [df_sine_bass_thought_trials_1, df_sine_bass_extra, df_sine_bass_trials_2, df_sine_bass_trials_3, df_no_sound_trials_1, df_no_sound_trials_2]
+# big_frame = pd.concat(diff_labels, ignore_index=True)
+# bg = big_frame.iloc[:, :513]
+
+# sound = bg[bg["label"]==1].iloc[:,1:]
+# nosound = bg[bg["label"]==0].iloc[:,1:]
+# imagesound = bg[bg["label"]==2].iloc[:,1:]
+
+
+
 
 
 def get_X_and_y(df, start=1):
@@ -51,9 +66,11 @@ def subtract_moving_average(df, n=50):
 # X_values_thought = df_sine_bass_thought_trials_1.iloc[:, 132:660]
 # df_thought = pd.concat([y_values_thought, X_values_thought], axis=1, ignore_index=True)
 
-diff_labels = [df_sine_bass_thought_trials_1, df_sine_bass_extra, df_sine_bass_trials_2, df_sine_bass_trials_3, df_no_sound_trials_1, df_no_sound_trials_2]
-big_frame = pd.concat(diff_labels, ignore_index=True)
-bg = big_frame.drop(big_frame.iloc[:, 517:], axis=1)
+
+snd = pd.DataFrame()
+# sn2 = sound.reset_index().iloc[:,1:].T
+for i in range(0, int(len(sound)/4)):
+    snd = pd.concat([snd, sound.iloc[i*4:i*4+4, :]], axis = 1)
 
 #separate channels into different dataframes
 bg1 = bg.iloc[::4, :]
@@ -63,6 +80,7 @@ bg4 = bg.iloc[3::4, :]
 
 bigX = bg.iloc[:, 1:]
 bigy = bg.iloc[:,0]
+
 
 #subtracting average of each row
 bigX = lab.iloc[:, 1:]
