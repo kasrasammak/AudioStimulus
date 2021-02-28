@@ -3,6 +3,8 @@
 """
 Created on Sat Sep 19 01:30:17 2020
 
+still unfinished
+
 @author: owlthekasra
 """
 from scipy.fft import fft

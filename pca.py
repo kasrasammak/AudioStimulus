@@ -26,6 +26,7 @@ def subtract_dimension(df, nbchan):
     reshaped = df.transpose(2,0,1).reshape(nbchan, -1)
     return reshaped
 
+# compute covariance matrix
 def get_covmat(df, pnts, ntrials, nbchan):
     reshapedDf = np.reshape(df, (ntrials, pnts, nbchan))
     covmat = np.array(nbchan)
@@ -37,6 +38,7 @@ def get_covmat(df, pnts, ntrials, nbchan):
     covmat = covmat/ntrials
     return covmat
 
+# compute eigendecomposition of covariance matrix
 def get_eigs(covmat):
     evals, evecs = LA.eig(covmat)
     idx = evals.argsort()[::-1]
@@ -49,19 +51,23 @@ def get_covmat_eigs(df, pnts, trials, nbchan):
     eigVal, eigVec = get_eigs(covmat)
     return (eigVal, eigVec)
 
+
 def get_percent(eigVal):
     evals_percent = np.array(100*eigVal/sum(eigVal));
     return evals_percent
 
+# return index of eigenalue percentages which pass a given threshhold
 def get_thin_index(eigVal, threshhold=0):
     percent = get_percent(eigVal)
     ind = np.nonzero(percent>threshhold)[0]
     return (ind, percent)
 
+# compute and return component vectors that pass given threshhold
 def get_comp(df, V, ind):
     comp_vecs = np.dot(V[:, ind].T, df)
     return comp_vecs
 
+# given an MxN matrix, compute and return eigenvalues and component vectors
 def get_eig_and_comp(df, pnts, ntrials, nbchan, threshhold=0):
     reshapedDf = np.reshape(df, (ntrials, pnts, nbchan))
     eigVal, eigVec = get_covmat_eigs(df, ntrials, pnts, nbchan)
@@ -69,6 +75,10 @@ def get_eig_and_comp(df, pnts, ntrials, nbchan, threshhold=0):
     comp_vecs = np.dot(eigVec[:,ind].T, subtract_dimension(reshapedDf, nbchan))
     return (comp_vecs, (eigVal, eigVec), percent)
 
+# given an MxN array and number of points for each trial, 
+# where M is total number of datapoints for all trials, 
+# return a list of MxN matrices, where M is number of datapoints in each trial
+# specified by pnts argument
 def reshape_to_list(df, pnts):
     nbchan = len(df)
     ntrials = np.int(np.shape(df)[1]/pnts)
@@ -77,6 +87,8 @@ def reshape_to_list(df, pnts):
     for i in range(1,ntrials):
         list1.append(reshape[i,:,:].T)
     return list1
+
+# add a new label column with the same given label, to label a specific class
 def add_label(df, label):
     dfL = np.empty([len(df), 1])
     dfL[:,:] = label

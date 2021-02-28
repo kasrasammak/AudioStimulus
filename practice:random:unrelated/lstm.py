@@ -57,8 +57,6 @@ model, batch_size = fit_model(xtrain, ytrain)
 acc = eval_model(model, xtest, ytest, batch_size)
 
 
-
-
 doit = training_chans[2].iloc[:, 1:].reset_index().iloc[:, 1:]
 doittoit = training_chans[2].iloc[:, 0].reset_index().iloc[:, 1:]
 toit = validation_chans[2].iloc[:, 1:].reset_index().iloc[:, 1:]

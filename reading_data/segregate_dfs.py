@@ -3,6 +3,10 @@
 """
 Created on Tue Jul 21 05:21:14 2020
 
+This code is specifically designed to get a dataframe from the sine-bass-trials
+Which I gathered using the experiment from collect_imagery_data.py
+into the folder sine_bass_trials
+
 @author: owlthekasra
 """
 
@@ -15,6 +19,7 @@ def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return array[idx]
+
 def transpose_add_label(df, label):
     dfT = df.T
     int1 = int(df.index[0])
@@ -27,6 +32,7 @@ def transpose_add_label(df, label):
         label.append(lab)
     dfT = dfT[label]
     return dfT
+
 def segregate_dfs(df, stamps, length, label):
     newDF = []
     for i in range(0,len(stamps)):
@@ -44,6 +50,7 @@ def segregate_dfs(df, stamps, length, label):
             endDFT = transpose_add_label(endDF, label)
             newDF.append(endDFT)
     return newDF
+
 def combine_seg_dfs(seg_df):
     concat_df = pd.DataFrame()
     for i in range(0, len(seg_df)):
@@ -72,7 +79,7 @@ def select_filename_with(set_of_names, df_starts_with):
         if (tail.startswith(df_starts_with)):
             return filename
 
-def get_it_girl(list_of_files, name):
+def get_dataframe_from_list(list_of_files, name):
     main_list = []
     boolean = False
     for element in list_of_files:
@@ -92,23 +99,25 @@ def get_medium_df_from_folder(tuple_list, name, label, length):
     newDF = segregate_dfs(tuple_list[0], tuple_list[1], length, label)
     first = combine_seg_dfs(newDF)
     return first
+
 def get_big_df_from_folders(main_list, name, label, length):
     big =pd.DataFrame()
     for element in main_list:
         first = get_medium_df_from_folder(element, name, label, length)
         big = big.append(first)
     return big
-def get_big_ass_df(list_of_files, names, length):
-    big_ass_df = pd.DataFrame()
+
+def get_very_big_df(list_of_files, names, length):
+    big_df = pd.DataFrame()
     x = 0
     for name in names:
-        newDF = get_big_df_from_folders(get_it_girl(list_of_files, name), name, x, length)
-        big_ass_df = big_ass_df.append(newDF)
+        newDF = get_big_df_from_folders(get_dataframe_from_list(list_of_files, name), name, x, length)
+        big_df = big_df.append(newDF)
         x = x+1
-    return big_ass_df
+    return big_df
 
-def get_separate_channel_dfs(big_ass_df):
-    reset = big_ass_df.reset_index()
+def get_separate_channel_dfs(big_df):
+    reset = big_df.reset_index()
     newdf = reset[reset['index']=='0'].iloc[:, 1:]
     newdf1 = reset[reset['index']=='1'].iloc[:, 1:]
     newdf2 = reset[reset['index']=='2'].iloc[:, 1:]
@@ -121,11 +130,11 @@ directory = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus/sine_bass_tr
 training_list = list_files(directory + 'training_set')
 validation_list = list_files(directory + 'validation_set')
 
-big_ass_training_set = get_big_ass_df(training_list, names, length)
-big_ass_validation_set = get_big_ass_df(validation_list, names, length)
+big_training_set = get_very_big_df(training_list, names, length)
+big_validation_set = get_very_big_df(validation_list, names, length)
 
-training_chans = get_separate_channel_dfs(big_ass_training_set)
-validation_chans = get_separate_channel_dfs(big_ass_validation_set)
+training_chans = get_separate_channel_dfs(big_training_set)
+validation_chans = get_separate_channel_dfs(big_validation_set)
 
 
 

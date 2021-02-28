@@ -3,6 +3,8 @@
 """
 Created on Mon Apr 27 18:48:30 2020
 
+First experiment, collecting data using EEGedu.com
+
 @author: owlthekasra
 """
 

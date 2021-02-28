@@ -24,6 +24,8 @@ def download_wait(path_to_downloads):
     return seconds
 
 
+# create audio stream and return timestamp of beginning of audio stream
+# as well as the streams duration
 def play_sound(audio, path, wait):
     time.sleep(wait)
     os.chdir(path)
