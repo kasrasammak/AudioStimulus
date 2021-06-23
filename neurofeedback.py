@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Nov  4 17:24:06 2020
-
-@author: owlthekasra
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Estimate Relaxation from Band Powers
 This example shows how to buffer, epoch, and transform EEG data from a single
 electrode into values for each of the classic frequencies (e.g. alpha, beta, theta)

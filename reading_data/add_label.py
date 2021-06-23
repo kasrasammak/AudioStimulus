@@ -19,6 +19,8 @@ import seaborn as sns
 import os
 import glob
 
+# transpose dataframe, add a label,
+# and recording timestamp information into column names
 def tpose_add_label_1x1(df, recording, label):
     df = df.iloc[:,0:5]
     dfT = df.T
@@ -37,10 +39,8 @@ def tpose_add_label_1x1(df, recording, label):
     dfT = dfT[label]
     dfT = dfT.set_index(dfT.index + suff)
     return dfT
-# big_frame.iloc[1:]
 
-
-
+# get dataframe from directory and add label
 def get_all_dataframes(rootdir, label):
     filenames = glob.glob(rootdir + "/*.csv")
     names = []
@@ -70,6 +70,7 @@ def get_all_dataframes(rootdir, label):
     
     return (dftlabels, big_frame)
 
+# get dataframe from directory
 def get_long_dataframe(rootdir):
     filenames = glob.glob(rootdir + "/*.csv")
     names = []
@@ -99,7 +100,7 @@ def get_long_dataframe(rootdir):
     
     return big_frame
 
-
+# add a label and split into x_set and y_set
 def add_label_train_test_split(df, label, ntrials):
     nbchan = len(df)
     df = df.T

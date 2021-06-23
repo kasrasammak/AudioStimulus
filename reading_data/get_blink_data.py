@@ -111,7 +111,8 @@ nonBlinkTestDf.to_csv(path + 'blink_results/nonBlinkTesting.csv')
 
 
 
-# one run
+# one run for each class
+# same code as above but separated by class rather than by process
 blinkTrainingList = glob.glob(path + 'blinkTraining/*.csv')
 blinkTrainList = []
 for member in blinkTrainingList:

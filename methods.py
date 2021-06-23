@@ -60,7 +60,7 @@ def appender(strt, end):
 
 #ACCURACY
     
-    #get accuracy metric by hand
+# get accuracy metric by hand
     
 def getR2(test, pred):
     sse = sum((abs(test - pred))**2)
@@ -89,8 +89,9 @@ def kasra_accuracy_score(y_test, y_pred):
                 num = num +1
     return num/denom
 
-    #assess accuracies
-    
+# assess accuracies
+
+# return classification model with best accuracy
 def getBest(model, acc, index, name, finalModel, acc_type=0):
     if (index == 0):
         finalModel = (model, acc, name)
@@ -100,6 +101,7 @@ def getBest(model, acc, index, name, finalModel, acc_type=0):
     print(finalModel[1])
     return finalModel
 
+# return regression model with best accuracy
 def getBestReg(model, acc, index, name, finalModel):
     if (index == 0):
         finalModel = (model, acc[1], acc[0], name)
@@ -107,8 +109,7 @@ def getBestReg(model, acc, index, name, finalModel):
         finalModel = (model, acc[1], acc[0], name)
     return finalModel
 
-    #cross validation
-    
+#cross validation
 def checkKCV(X, y, cv, model):
     train_test = train_test_split(X, y, random_state=1)
     accuracies = cross_val_score(estimator = model, X = train_test[0], y = train_test[2], cv = cv, n_jobs = -1)
@@ -117,7 +118,7 @@ def checkKCV(X, y, cv, model):
 
 #MODELS
     
-    #initialize
+#initialize models given a model name
     
 def initializeModel(name, param_1 = 5, neighbors=5, radius = 1.0, n_estimators=100, max_depth=2, weights='uniform', kernel='linear', n_components=1):
     if (name == 'knn'):
@@ -137,7 +138,7 @@ def initializeModel(name, param_1 = 5, neighbors=5, radius = 1.0, n_estimators=1
 
     return model
 
-    #splitting, fitting, predicting
+#splitting, fitting, predicting
     
 def splitNFit(X, y, model):
     train_test = train_test_split(X, y, random_state=1)
@@ -170,12 +171,9 @@ def fitPredictValSet(X, y, X_val, y_val, name, param=5, neighbors=5, radius = 1.
     acc, pred, y_test = predictTest(model, X_val, y_val, name)
     return model, acc, pred, y_test
 
-#
-
-# ULTIMATE FUNCTIONALITY: 
+# evaluate models, return list of models and their accuracies as well as best model
     
-   #DO EVERYTHING ASSESS MODELS RETURN WINNER
-    
+# evaluate same model with different hyperparameters
 def evalHyperParams(X, y, X_val, y_val, name, pStrt, pSize, acctype=0):
     mylists = [[],[],[],[]]
     if (name != 'rnr') & (name != 'knnr'):
@@ -191,7 +189,8 @@ def evalHyperParams(X, y, X_val, y_val, name, pStrt, pSize, acctype=0):
         else:
             finalModel = getBestReg(mylists[0][i-pStrt], mylists[1][i-pStrt], i-pStrt, i, finalModel)
     return finalModel, mylists
-    
+
+# evaluate different models
 def evaluateModels(X, y, X_val, y_val, modelnames, acctype=0):
     models = [[],[],[],[]]
     finalModel = (0,0,0)

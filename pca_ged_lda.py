@@ -18,6 +18,7 @@ pnts = 512
 nbchan = 4
 directory = '/Users/owlthekasra/Documents/Code/Python/AudioStimulus'
 
+# Read CSVs from blink experiment
 folder = '/blink_experiment/blink_results'
 path = directory + folder
 nonblinkDf = np.array(pd.read_csv(path + '/nonBlinkTraining.csv').iloc[:,1:])
@@ -25,6 +26,7 @@ blinkDf = np.array(pd.read_csv(path + '/blinkTraining.csv').iloc[:,1:])
 blinkTestDf = np.array(pd.read_csv(path + '/blinkTesting.csv').iloc[:,1:])
 nonblinkTestDf = np.array(pd.read_csv(path + '/nonBlinkTesting.csv').iloc[:,1:])
 
+# Collect paths from thought experiment
 thought_paths = []
 thought_paths.append(directory + '/data/sine_bass/trials_2')
 thought_paths.append(directory + '/data/sine_bass/trials_3')
@@ -32,12 +34,18 @@ thought_paths.append(directory + '/data/no_sound/trials_1')
 thought_paths.append(directory + '/data/no_sound/trials_2')
 thought_paths.append(directory + '/data/sine_bass_thought/trials_1')
 
+# =============================================================================
+# read CSVs from thought experiment into an MxN dataframe,
+# where M is datapoints of all trials in succession
+# and N is number of channels
+# =============================================================================
 dfSound = al.get_long_dataframe(thought_paths[0])
 dfSoundTest = al.get_long_dataframe(thought_paths[1]).iloc[:-2560,:]
 dfNoSound = al.get_long_dataframe(thought_paths[2])
 dfNoSoundTest = al.get_long_dataframe(thought_paths[3])
 dfThought = al.get_long_dataframe(thought_paths[4]).iloc[:122880,:]
 
+# turn dataframes into numpy arrays
 dfSoundTr = np.array(dfSound)
 dfNoSoundTr = np.array(dfNoSound)
 dfThoughtTr = np.array(dfThought)[:61440,:]
@@ -45,64 +53,84 @@ dfSoundT= np.array(dfSound)
 dfNoSoundT = np.array(dfNoSound)
 dfThoughtT = np.array(dfThought)[61440:,:]
 
-## Quick CSP
+# =============================================================================
+# Common Spatial Patterns (CSP)
+# Generalized Eigendecomposition from raw data
+# =============================================================================
+
+# compute covariance matrices
 covA = np.cov(dfNoSoundTr.T)
 covE = np.cov(dfThoughtTr.T)
 
+# compute GED and sort eigenvalues in descending order
 E, V = np.linalg.eig(np.dot(np.linalg.inv(covA + covE), covA))
 idx = E.argsort()[::-1]
+
 
 comp_blink_train = np.dot(V[:, idx].T, dfNoSoundTr.T)
 comp_nonblink_train = np.dot(V[:, idx].T, dfThoughtTr.T)
 comp_blink_test = np.dot(V[:, idx].T, dfNoSoundT.T)
 comp_nonblink_test = np.dot(V[:, idx].T, dfThoughtT.T)
 
-## perform PCA and then CSP
+# =============================================================================
+# Principal Component Analysis into Common Spatial Patterns
+# Perform PCA on raw data
+# Perform CSP on component vectors
+# =============================================================================
+
+# # set threshold and compute PCA
 # thresh1 = 0
 # thresh2 = 0
 # comp_eig_vecs_blink, eig_blink, blink_percent = pca.get_eig_and_comp(blinkDf, 512, 68, 4, thresh1)
 # comp_eig_vecs_nonblink, eig_nonblink,nonblink_percent = pca.get_eig_and_comp(nonblinkDf, 512, 69, 4, thresh2)
 
+# # Compute component vectors of validation data 
+# # using the eigenvectors of training data
 # comp_blink_test_pca = pca.get_comp(blinkTestDf.T,eig_blink[1], [0,1,2,3])
 # comp_nonblink_test_pca = pca.get_comp(nonblinkTestDf.T, eig_nonblink[1], [0,1,2,3])
 
+# # create list where each element of list represents an MxN trial
+# # where M is the number of time points and N is number of channels
 # list1 = pca.reshape_to_list(comp_eig_vecs_blink, 512)
 # list2 = pca.reshape_to_list(comp_eig_vecs_nonblink, 512)
 
+# # Compute Common Spatial Patterns of PCA component vectors
+# # and compute new CSP component vectors
 # csps_training = CSP(list1, list2)
-
 # comp_blink_train = np.dot(csps_training[0], comp_eig_vecs_blink)
 # comp_nonblink_train = np.dot(csps_training[0], comp_eig_vecs_nonblink)
-
 # comp_blink_test = np.dot(csps_training[0], comp_blink_test_pca)
 # comp_nonblink_test = np.dot(csps_training[0], comp_nonblink_test_pca)
 
+# reshape array to dimension of leftover components
 dim = 2
-
 f_blink_tr = pca.add_dimension(comp_blink_train[:dim, :], pnts, ntrials, dim)
 f_nonblink_tr = pca.add_dimension(comp_nonblink_train[:dim, :], pnts, ntrials, dim)
 f_blink_t = pca.add_dimension(comp_blink_test[:dim, :], pnts, ntrials, dim)
 f_nonblink_t = pca.add_dimension(comp_nonblink_test[:dim, :], pnts, ntrials, dim)
 
+# compute the log of the variance of all the data points in each trial
 f_x_b_tr = np.log(np.var(f_blink_tr,axis = 1, ddof=1))
 f_x_nb_tr = np.log(np.var(f_nonblink_tr,axis = 1, ddof=1))[:ntrials,:]
 f_x_b_t = np.log(np.var(f_blink_t,axis = 1, ddof=1))
 f_x_nb_t = np.log(np.var(f_nonblink_t,axis = 1, ddof=1))
 
-
+# add a label to distinguish classes
 f_x_b_tr = pca.add_label(f_x_b_tr, 1)
 f_x_nb_tr = pca.add_label(f_x_nb_tr, 0)
 f_x_b_t = pca.add_label(f_x_b_t, 1)
 f_x_nb_t = pca.add_label(f_x_nb_t, 0)
 
+# append different classes into one array, and separate labels into a separate array
+# for both training set and validation set
 x_tr = np.append(f_x_b_tr[:,:dim], f_x_nb_tr[:,:dim], axis = 0)
 y_tr = np.append(f_x_b_tr[:,dim], f_x_nb_tr[:,dim])
 
 x_t = np.append(f_x_b_t[:,:dim], f_x_nb_t[:,:dim], axis = 0)
 y_t = np.append(f_x_b_t[:,dim], f_x_nb_t[:,dim])
 
-
-
+# input train-test-split data for both training and validation set 
+# into an LDA classifier
 mod, acc, pred, y_test = md.fitPredictValSet(x_tr, y_tr, x_t, y_t, "lda")
 
 # def var(sample):
@@ -122,28 +150,28 @@ mod, acc, pred, y_test = md.fitPredictValSet(x_tr, y_tr, x_t, y_t, "lda")
 # --------------------------------------------
 # ---------EXTRA OPTIONS----------------------
 
-# ERP covariance matrix
-blinkCovMat = co.get_cov_mat_ERP(blinkDf, 68, 4)
-blinkErp = co.get_ERP(blinkDf, 68, 4).T.reset_index().iloc[:,1:].T
+# # ERP covariance matrix
+# blinkCovMat = co.get_cov_mat_ERP(blinkDf, 68, 4)
+# blinkErp = co.get_ERP(blinkDf, 68, 4).T.reset_index().iloc[:,1:].T
 
-blinkCovMatErp = blinkCovMat.to_numpy()
-blinkCovMatErp = np.array(blinkCovMatErp, dtype=float)
+# blinkCovMatErp = blinkCovMat.to_numpy()
+# blinkCovMatErp = np.array(blinkCovMatErp, dtype=float)
 
-# for erp
-list1 = []
-list2 =[]
-list1.append(comp_eig_vecs_blink)
-list2.append(comp_eig_vecs_nonblink)
+# # for erp
+# list1 = []
+# list2 =[]
+# list1.append(comp_eig_vecs_blink)
+# list2.append(comp_eig_vecs_nonblink)
 
 
-# ------ some plotting 
-plt.plot(comp_eig_vecs_blink.T)
-plt.plot(blinkErp.iloc[:,3])
-fig, axs = plt.subplots(4)
-fig.suptitle('Vertically stacked subplots')
-axs[0].plot(blinkErp.iloc[:,0])
-axs[1].plot(blinkErp.iloc[:,1])
-axs[2].plot(blinkErp.iloc[:,2])
-axs[3].plot(blinkErp.iloc[:,3])
+# # ------ some plotting 
+# plt.plot(comp_eig_vecs_blink.T)
+# plt.plot(blinkErp.iloc[:,3])
+# fig, axs = plt.subplots(4)
+# fig.suptitle('Vertically stacked subplots')
+# axs[0].plot(blinkErp.iloc[:,0])
+# axs[1].plot(blinkErp.iloc[:,1])
+# axs[2].plot(blinkErp.iloc[:,2])
+# axs[3].plot(blinkErp.iloc[:,3])
 
-plt.scatter(blinkErp.iloc[:,0], blinkErp.iloc[:,1])
+# plt.scatter(blinkErp.iloc[:,0], blinkErp.iloc[:,1])
